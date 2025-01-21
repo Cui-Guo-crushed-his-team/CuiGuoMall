@@ -2,8 +2,10 @@ module github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/auth
 
 go 1.22.4
 
-replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
-
+replace (
+	github.com/apache/thrift => github.com/apache/thrift v0.13.0
+	github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc => ../../rpc
+)
 require (
 	github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc v0.0.0-00010101000000-000000000000
 	github.com/cloudwego/kitex v0.12.1
