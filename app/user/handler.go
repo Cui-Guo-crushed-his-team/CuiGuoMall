@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/user/biz/service"
-	
+	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/user"
 )
 
 // UserServiceImpl implements the last service interface defined in the IDL.
