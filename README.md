@@ -14,7 +14,7 @@ A "simplified version" of a microservice Douyin shopping mall made by Kitex and 
 | Docker     | -         |
 | RabbitMQ   | -         |
 | Grafana    | -         |
-## Make order
+## Make command
 | order           | introduce                                               |
 |-----------------|---------------------------------------------------------|
 | make gen-client | generate rpc client and stub code in rpc module         |
