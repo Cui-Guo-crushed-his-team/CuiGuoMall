@@ -17,6 +17,7 @@ A "simplified version" of a microservice Douyin shopping mall made by Kitex and 
 ## Make command
 `Make sure you have executed "sudo chmod +x" to script files in the "scripts" directory`
 
+
 | order           | introduce                                               |
 |-----------------|---------------------------------------------------------|
 | make gen-client | generate rpc client and stub code in rpc module         |
