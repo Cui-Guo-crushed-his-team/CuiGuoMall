@@ -7,7 +7,7 @@ if ! [[ "$0" =~ scripts/gen_rpc_client.sh ]]; then
   exit 255
 fi
 
-PROTO_ROOT="./rpc/idl/proto/rpc"
+PROTO_ROOT="./idl/proto/rpc"
 proto_files=()
 
 function find_proto_files() {
@@ -38,8 +38,8 @@ function gen_rpc_client_code() {
       --type RPC \
       --service "${proto}" \
       --module github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc \
-      --I ./idl/proto/rpc \
-      --idl idl/proto/rpc/"${proto_file}"
+      --I ../idl/proto/rpc \
+      --idl ../idl/proto/rpc/"${proto_file}"
     if [ -d "$kitex_gen/rpc/$proto" ]; then
       echo "gen ${proto} service rpc code finish"
     fi
