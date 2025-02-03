@@ -1,14 +1,16 @@
-.PHONY: gen-client
-gen-client:
-	@./scripts/gen_rpc_client.sh
+.PHONY: gen-rpc-client gen-rpc-server gen-http-client gen-http-server tidy gen-rpc
 
-.PHONY: gen-server
-gen-server:
-	@./scripts/gen_rpc_server.sh
+gen-rpc-client:
+	@./scripts/gen_rpc.sh client
 
-.PHONY: gen-rpc
-gen-rpc: gen-client gen-server
+gen-rpc-server:
+	@./scripts/gen_rpc.sh server
 
-.PHONY: tidy
+gen-http-client:
+	@./scripts/gen_http.sh client
+
+gen-http-server:
+	@./scripts/gen_http.sh server
+gen-rpc: gen-rpc-client gen-rpc-server
 tidy:
 	@./scripts/gotidy.sh
