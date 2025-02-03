@@ -9,9 +9,23 @@ import (
 // PaymentServiceImpl implements the last service interface defined in the IDL.
 type PaymentServiceImpl struct{}
 
-// Charge implements the PaymentServiceImpl interface.
-func (s *PaymentServiceImpl) Charge(ctx context.Context, req *payment.ChargeReq) (resp *payment.ChargeResp, err error) {
-	resp, err = service.NewChargeService(ctx).Run(req)
+// Prepay implements the PaymentServiceImpl interface.
+func (s *PaymentServiceImpl) Prepay(ctx context.Context, req *payment.PrepayReq) (resp *payment.PrepayResp, err error) {
+	resp, err = service.NewPrepayService(ctx).Run(req)
+
+	return resp, err
+}
+
+// Finish implements the PaymentServiceImpl interface.
+func (s *PaymentServiceImpl) Finish(ctx context.Context, req *payment.FinishReq) (resp *payment.FinishResp, err error) {
+	resp, err = service.NewFinishService(ctx).Run(req)
+
+	return resp, err
+}
+
+// GetByOutTradeNo implements the PaymentServiceImpl interface.
+func (s *PaymentServiceImpl) GetByOutTradeNo(ctx context.Context, req *payment.GetByOutTradeNoReq) (resp *payment.GetByOutTradeNoResp, err error) {
+	resp, err = service.NewGetByOutTradeNoService(ctx).Run(req)
 
 	return resp, err
 }

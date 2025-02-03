@@ -12,7 +12,9 @@ import (
 type RPCClient interface {
 	KitexClient() paymentservice.Client
 	Service() string
-	Charge(ctx context.Context, Req *payment.ChargeReq, callOptions ...callopt.Option) (r *payment.ChargeResp, err error)
+	Prepay(ctx context.Context, Req *payment.PrepayReq, callOptions ...callopt.Option) (r *payment.PrepayResp, err error)
+	Finish(ctx context.Context, Req *payment.FinishReq, callOptions ...callopt.Option) (r *payment.FinishResp, err error)
+	GetByOutTradeNo(ctx context.Context, Req *payment.GetByOutTradeNoReq, callOptions ...callopt.Option) (r *payment.GetByOutTradeNoResp, err error)
 }
 
 func NewRPCClient(dstService string, opts ...client.Option) (RPCClient, error) {
@@ -41,6 +43,14 @@ func (c *clientImpl) KitexClient() paymentservice.Client {
 	return c.kitexClient
 }
 
-func (c *clientImpl) Charge(ctx context.Context, Req *payment.ChargeReq, callOptions ...callopt.Option) (r *payment.ChargeResp, err error) {
-	return c.kitexClient.Charge(ctx, Req, callOptions...)
+func (c *clientImpl) Prepay(ctx context.Context, Req *payment.PrepayReq, callOptions ...callopt.Option) (r *payment.PrepayResp, err error) {
+	return c.kitexClient.Prepay(ctx, Req, callOptions...)
+}
+
+func (c *clientImpl) Finish(ctx context.Context, Req *payment.FinishReq, callOptions ...callopt.Option) (r *payment.FinishResp, err error) {
+	return c.kitexClient.Finish(ctx, Req, callOptions...)
+}
+
+func (c *clientImpl) GetByOutTradeNo(ctx context.Context, Req *payment.GetByOutTradeNoReq, callOptions ...callopt.Option) (r *payment.GetByOutTradeNoResp, err error) {
+	return c.kitexClient.GetByOutTradeNo(ctx, Req, callOptions...)
 }

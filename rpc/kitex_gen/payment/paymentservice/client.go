@@ -11,7 +11,9 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	Charge(ctx context.Context, Req *payment.ChargeReq, callOptions ...callopt.Option) (r *payment.ChargeResp, err error)
+	Prepay(ctx context.Context, Req *payment.PrepayReq, callOptions ...callopt.Option) (r *payment.PrepayResp, err error)
+	Finish(ctx context.Context, Req *payment.FinishReq, callOptions ...callopt.Option) (r *payment.FinishResp, err error)
+	GetByOutTradeNo(ctx context.Context, Req *payment.GetByOutTradeNoReq, callOptions ...callopt.Option) (r *payment.GetByOutTradeNoResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -43,7 +45,17 @@ type kPaymentServiceClient struct {
 	*kClient
 }
 
-func (p *kPaymentServiceClient) Charge(ctx context.Context, Req *payment.ChargeReq, callOptions ...callopt.Option) (r *payment.ChargeResp, err error) {
+func (p *kPaymentServiceClient) Prepay(ctx context.Context, Req *payment.PrepayReq, callOptions ...callopt.Option) (r *payment.PrepayResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Charge(ctx, Req)
+	return p.kClient.Prepay(ctx, Req)
+}
+
+func (p *kPaymentServiceClient) Finish(ctx context.Context, Req *payment.FinishReq, callOptions ...callopt.Option) (r *payment.FinishResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.Finish(ctx, Req)
+}
+
+func (p *kPaymentServiceClient) GetByOutTradeNo(ctx context.Context, Req *payment.GetByOutTradeNoReq, callOptions ...callopt.Option) (r *payment.GetByOutTradeNoResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.GetByOutTradeNo(ctx, Req)
 }
