@@ -18,23 +18,28 @@ proto_files=()
 
 function find_proto_files() {
     while IFS= read -r file; do
+      filename=$(basename "$file")
+      if [[ "$filename" == "api.proto" ]]; then
+        continue
+      fi
       filename=$(basename "$file" .proto)
       proto_files+=("$filename")
     done < <(find "$PROTO_ROOT" -type f -name "*.proto" | sort -u)
 }
 
 function gen_client() {
-  local kitex_gen="./rpc/kitex_gen"
-  [ -d "$kitex_gen" ] && rm -rf "${kitex_gen:?}"
-
   for proto in "${proto_files[@]}"; do
-    mkdir -p "$kitex_gen/rpc/$proto"
+    local kitex_gen="./rpc/kitex_gen"
+    if [[ ! -d "$kitex_gen/${proto}" ]];then
+      mkdir "$kitex_gen/${proto}"
+    fi
     echo "generating client code for ${proto}.proto"
     pushd rpc >/dev/null || exit 1
     cwgo client \
       --type RPC \
       --service "${proto}" \
       --module github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc \
+      --pass "--protobuf Mgoogle/protobuf/descriptor.proto=github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/google/protobuf -protobuf-plugin=validator:module=github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc,recurse=false:." \
       --I ../idl/proto/rpc \
       --idl "../idl/proto/rpc/${proto}.proto"
     popd >/dev/null
