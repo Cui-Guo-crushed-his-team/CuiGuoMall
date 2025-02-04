@@ -23,6 +23,15 @@ type Config struct {
 	MySQL    MySQL    `yaml:"mysql"`
 	Redis    Redis    `yaml:"redis"`
 	Registry Registry `yaml:"registry"`
+	AliPay   AliPay   `yaml:"alipay"`
+}
+
+type AliPay struct {
+	NotifyURL  string `yaml:"notify_url"`
+	ReturnURL  string `yaml:"return_url"`
+	AppID      string `yaml:"app_id"`
+	PrivateKey string `yaml:"private_key"`
+	PublicKey  string `yaml:"public_key"`
 }
 
 type MySQL struct {

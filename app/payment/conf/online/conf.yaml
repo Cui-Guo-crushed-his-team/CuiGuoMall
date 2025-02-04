@@ -21,3 +21,9 @@ redis:
   username: ""
   password: ""
   db: 0
+alipay:
+  notify_url: "http://example.com/notify"
+  return_url: "http://example.com/return"
+  app_id: "your_app_id"
+  private_key: "your_private_key"
+  public_key: "your_public_key"

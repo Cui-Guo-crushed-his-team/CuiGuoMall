@@ -7,10 +7,28 @@ import (
 	"github.com/cloudwego/kitex/pkg/klog"
 )
 
-func Charge(ctx context.Context, req *payment.ChargeReq, callOptions ...callopt.Option) (resp *payment.ChargeResp, err error) {
-	resp, err = defaultClient.Charge(ctx, req, callOptions...)
+func Prepay(ctx context.Context, req *payment.PrepayReq, callOptions ...callopt.Option) (resp *payment.PrepayResp, err error) {
+	resp, err = defaultClient.Prepay(ctx, req, callOptions...)
 	if err != nil {
-		klog.CtxErrorf(ctx, "Charge call failed,err =%+v", err)
+		klog.CtxErrorf(ctx, "Prepay call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}
+
+func Finish(ctx context.Context, req *payment.FinishReq, callOptions ...callopt.Option) (resp *payment.FinishResp, err error) {
+	resp, err = defaultClient.Finish(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "Finish call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}
+
+func GetByOutTradeNo(ctx context.Context, req *payment.GetByOutTradeNoReq, callOptions ...callopt.Option) (resp *payment.GetByOutTradeNoResp, err error) {
+	resp, err = defaultClient.GetByOutTradeNo(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "GetByOutTradeNo call failed,err =%+v", err)
 		return nil, err
 	}
 	return resp, nil

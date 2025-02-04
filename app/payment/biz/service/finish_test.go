@@ -6,12 +6,12 @@ import (
 	"testing"
 )
 
-func TestCharge_Run(t *testing.T) {
+func TestFinish_Run(t *testing.T) {
 	ctx := context.Background()
-	s := NewChargeService(ctx)
+	s := NewFinishService(ctx)
 	// init req and assert value
 
-	req := &payment.ChargeReq{}
+	req := &payment.FinishReq{}
 	resp, err := s.Run(req)
 	t.Logf("err: %v", err)
 	t.Logf("resp: %v", resp)
