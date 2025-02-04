@@ -2,9 +2,7 @@ syntax = "proto3";
 
 package  checkout;
 
-import "payment.proto";
-
-option go_package = "/checkout";
+option go_package = "github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/checkout";
 
 service CheckoutService {
   rpc Checkout(CheckoutReq) returns (CheckoutResp) {}
