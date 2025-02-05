@@ -12,10 +12,15 @@ var (
 	_ = fastpb.Skip
 )
 
-func (x *DeliverTokenReq) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+func (x *ValidateTokenRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -29,18 +34,33 @@ func (x *DeliverTokenReq) FastRead(buf []byte, _type int8, number int32) (offset
 SkipFieldError:
 	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
 ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DeliverTokenReq[number], err)
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_ValidateTokenRequest[number], err)
 }
 
-func (x *DeliverTokenReq) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.UserId, offset, err = fastpb.ReadInt32(buf, _type)
+func (x *ValidateTokenRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.UserId, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
-func (x *VerifyTokenReq) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+func (x *ValidateTokenRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.UserTrait, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *ValidateTokenResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 3:
+		offset, err = x.fastReadField3(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -54,204 +74,149 @@ func (x *VerifyTokenReq) FastRead(buf []byte, _type int8, number int32) (offset 
 SkipFieldError:
 	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
 ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VerifyTokenReq[number], err)
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_ValidateTokenResponse[number], err)
 }
 
-func (x *VerifyTokenReq) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+func (x *ValidateTokenResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.IsValid, offset, err = fastpb.ReadBool(buf, _type)
+	return offset, err
+}
+
+func (x *ValidateTokenResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	x.Token, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
-func (x *DeliveryResp) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
-	switch number {
-	case 1:
-		offset, err = x.fastReadField1(buf, _type)
-		if err != nil {
-			goto ReadFieldError
-		}
-	default:
-		offset, err = fastpb.Skip(buf, _type, number)
-		if err != nil {
-			goto SkipFieldError
-		}
-	}
-	return offset, nil
-SkipFieldError:
-	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
-ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DeliveryResp[number], err)
-}
-
-func (x *DeliveryResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.Token, offset, err = fastpb.ReadString(buf, _type)
+func (x *ValidateTokenResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.Error, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
-func (x *VerifyResp) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
-	switch number {
-	case 1:
-		offset, err = x.fastReadField1(buf, _type)
-		if err != nil {
-			goto ReadFieldError
-		}
-	default:
-		offset, err = fastpb.Skip(buf, _type, number)
-		if err != nil {
-			goto SkipFieldError
-		}
-	}
-	return offset, nil
-SkipFieldError:
-	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
-ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VerifyResp[number], err)
-}
-
-func (x *VerifyResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.Res, offset, err = fastpb.ReadBool(buf, _type)
-	return offset, err
-}
-
-func (x *DeliverTokenReq) FastWrite(buf []byte) (offset int) {
+func (x *ValidateTokenRequest) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
 	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
 	return offset
 }
 
-func (x *DeliverTokenReq) fastWriteField1(buf []byte) (offset int) {
-	if x.UserId == 0 {
+func (x *ValidateTokenRequest) fastWriteField1(buf []byte) (offset int) {
+	if x.UserId == "" {
 		return offset
 	}
-	offset += fastpb.WriteInt32(buf[offset:], 1, x.GetUserId())
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetUserId())
 	return offset
 }
 
-func (x *VerifyTokenReq) FastWrite(buf []byte) (offset int) {
+func (x *ValidateTokenRequest) fastWriteField2(buf []byte) (offset int) {
+	if x.UserTrait == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetUserTrait())
+	return offset
+}
+
+func (x *ValidateTokenResponse) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
 	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField3(buf[offset:])
 	return offset
 }
 
-func (x *VerifyTokenReq) fastWriteField1(buf []byte) (offset int) {
+func (x *ValidateTokenResponse) fastWriteField1(buf []byte) (offset int) {
+	if !x.IsValid {
+		return offset
+	}
+	offset += fastpb.WriteBool(buf[offset:], 1, x.GetIsValid())
+	return offset
+}
+
+func (x *ValidateTokenResponse) fastWriteField2(buf []byte) (offset int) {
 	if x.Token == "" {
 		return offset
 	}
-	offset += fastpb.WriteString(buf[offset:], 1, x.GetToken())
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetToken())
 	return offset
 }
 
-func (x *DeliveryResp) FastWrite(buf []byte) (offset int) {
-	if x == nil {
+func (x *ValidateTokenResponse) fastWriteField3(buf []byte) (offset int) {
+	if x.Error == "" {
 		return offset
 	}
-	offset += x.fastWriteField1(buf[offset:])
+	offset += fastpb.WriteString(buf[offset:], 3, x.GetError())
 	return offset
 }
 
-func (x *DeliveryResp) fastWriteField1(buf []byte) (offset int) {
-	if x.Token == "" {
-		return offset
-	}
-	offset += fastpb.WriteString(buf[offset:], 1, x.GetToken())
-	return offset
-}
-
-func (x *VerifyResp) FastWrite(buf []byte) (offset int) {
-	if x == nil {
-		return offset
-	}
-	offset += x.fastWriteField1(buf[offset:])
-	return offset
-}
-
-func (x *VerifyResp) fastWriteField1(buf []byte) (offset int) {
-	if !x.Res {
-		return offset
-	}
-	offset += fastpb.WriteBool(buf[offset:], 1, x.GetRes())
-	return offset
-}
-
-func (x *DeliverTokenReq) Size() (n int) {
+func (x *ValidateTokenRequest) Size() (n int) {
 	if x == nil {
 		return n
 	}
 	n += x.sizeField1()
+	n += x.sizeField2()
 	return n
 }
 
-func (x *DeliverTokenReq) sizeField1() (n int) {
-	if x.UserId == 0 {
+func (x *ValidateTokenRequest) sizeField1() (n int) {
+	if x.UserId == "" {
 		return n
 	}
-	n += fastpb.SizeInt32(1, x.GetUserId())
+	n += fastpb.SizeString(1, x.GetUserId())
 	return n
 }
 
-func (x *VerifyTokenReq) Size() (n int) {
+func (x *ValidateTokenRequest) sizeField2() (n int) {
+	if x.UserTrait == "" {
+		return n
+	}
+	n += fastpb.SizeString(2, x.GetUserTrait())
+	return n
+}
+
+func (x *ValidateTokenResponse) Size() (n int) {
 	if x == nil {
 		return n
 	}
 	n += x.sizeField1()
+	n += x.sizeField2()
+	n += x.sizeField3()
 	return n
 }
 
-func (x *VerifyTokenReq) sizeField1() (n int) {
+func (x *ValidateTokenResponse) sizeField1() (n int) {
+	if !x.IsValid {
+		return n
+	}
+	n += fastpb.SizeBool(1, x.GetIsValid())
+	return n
+}
+
+func (x *ValidateTokenResponse) sizeField2() (n int) {
 	if x.Token == "" {
 		return n
 	}
-	n += fastpb.SizeString(1, x.GetToken())
+	n += fastpb.SizeString(2, x.GetToken())
 	return n
 }
 
-func (x *DeliveryResp) Size() (n int) {
-	if x == nil {
+func (x *ValidateTokenResponse) sizeField3() (n int) {
+	if x.Error == "" {
 		return n
 	}
-	n += x.sizeField1()
+	n += fastpb.SizeString(3, x.GetError())
 	return n
 }
 
-func (x *DeliveryResp) sizeField1() (n int) {
-	if x.Token == "" {
-		return n
-	}
-	n += fastpb.SizeString(1, x.GetToken())
-	return n
-}
-
-func (x *VerifyResp) Size() (n int) {
-	if x == nil {
-		return n
-	}
-	n += x.sizeField1()
-	return n
-}
-
-func (x *VerifyResp) sizeField1() (n int) {
-	if !x.Res {
-		return n
-	}
-	n += fastpb.SizeBool(1, x.GetRes())
-	return n
-}
-
-var fieldIDToName_DeliverTokenReq = map[int32]string{
+var fieldIDToName_ValidateTokenRequest = map[int32]string{
 	1: "UserId",
+	2: "UserTrait",
 }
 
-var fieldIDToName_VerifyTokenReq = map[int32]string{
-	1: "Token",
-}
-
-var fieldIDToName_DeliveryResp = map[int32]string{
-	1: "Token",
-}
-
-var fieldIDToName_VerifyResp = map[int32]string{
-	1: "Res",
+var fieldIDToName_ValidateTokenResponse = map[int32]string{
+	1: "IsValid",
+	2: "Token",
+	3: "Error",
 }

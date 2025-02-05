@@ -18,3 +18,14 @@ redis:
   username: ""
   password: ""
   db: 0
+
+jaeger:
+  url: "http://yourjaegerhostname:14268/api/traces"
+  exportEndpoint: "localhost:4317"
+
+prometheus:
+  Post: ":9190"
+  Path: "/metrics"
+
+consul:
+  addr: "127.0.0.1:8500"

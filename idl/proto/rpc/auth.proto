@@ -5,22 +5,21 @@ package auth;
 option go_package='github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/auth';
 
 service AuthService {
-  rpc DeliverTokenByRPC(DeliverTokenReq) returns (DeliveryResp) {}
-  rpc VerifyTokenByRPC(VerifyTokenReq) returns (VerifyResp) {}
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse){} //用于必须登录才能使用的接口
 }
 
-message DeliverTokenReq {
-  int32  user_id= 1;
+message ValidateTokenRequest {
+  string user_id = 1;
+  string user_trait = 2; // 用户客户端特征,如用户IP
 }
-
-message VerifyTokenReq {
-  string token = 1;
+// 校验令牌响应
+message ValidateTokenResponse {
+  bool is_valid = 1;
+  string token = 2; // 续约产生的新token
+  string error = 3;          // 错误信息（is_valid=false时返回，如 "EXPIRED"）
 }
-
-message DeliveryResp {
-  string token = 1;
-}
-
-message VerifyResp {
-  bool res = 1;
+enum ErrorCode {
+  ERROR_UNKNOWN = 0;
+  ERROR_TOKEN = 1; // 特征码(比如用户IP)+用户ID生成的MD5无效
+  ERROR_EXPIRE = 2; //redis_kv ttl过期
 }

@@ -6,12 +6,12 @@ import (
 	"testing"
 )
 
-func TestVerifyTokenByRPC_Run(t *testing.T) {
+func TestValidateToken_Run(t *testing.T) {
 	ctx := context.Background()
-	s := NewVerifyTokenByRPCService(ctx)
+	s := NewValidateTokenService(ctx)
 	// init req and assert value
 
-	req := &auth.VerifyTokenReq{}
+	req := &auth.ValidateTokenRequest{}
 	resp, err := s.Run(req)
 	t.Logf("err: %v", err)
 	t.Logf("resp: %v", resp)
