@@ -15,7 +15,7 @@ service PaymentService {
 
   // Prepay 预支付，对应于创建订单的步骤
   rpc  Prepay(PrepayReq) returns (PrepayResp){}
-  // Repay 重新支付，用于没没支付成功再次调用支付
+  // Repay 重新支付，用于没支付成功再次调用支付
   rpc  Repay(RepayReq) returns (RepayResp){}
 
   rpc  Finish(FinishReq) returns (FinishResp){}
