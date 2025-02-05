@@ -32,6 +32,14 @@ func (m *PrepayResp) Validate() error {
 	return nil
 }
 
+func (m *RepayReq) Validate() error {
+	return nil
+}
+
+func (m *RepayResp) Validate() error {
+	return nil
+}
+
 func (m *FinishReq) Validate() error {
 	return nil
 }

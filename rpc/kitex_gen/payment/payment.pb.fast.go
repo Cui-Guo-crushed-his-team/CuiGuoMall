@@ -19,11 +19,6 @@ func (x *PrepayReq) FastRead(buf []byte, _type int8, number int32) (offset int, 
 		if err != nil {
 			goto ReadFieldError
 		}
-	case 2:
-		offset, err = x.fastReadField2(buf, _type)
-		if err != nil {
-			goto ReadFieldError
-		}
 	case 3:
 		offset, err = x.fastReadField3(buf, _type)
 		if err != nil {
@@ -47,11 +42,6 @@ func (x *PrepayReq) fastReadField1(buf []byte, _type int8) (offset int, err erro
 	return offset, err
 }
 
-func (x *PrepayReq) fastReadField2(buf []byte, _type int8) (offset int, err error) {
-	x.OutTradeNo, offset, err = fastpb.ReadString(buf, _type)
-	return offset, err
-}
-
 func (x *PrepayReq) fastReadField3(buf []byte, _type int8) (offset int, err error) {
 	x.Subject, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
@@ -61,6 +51,11 @@ func (x *PrepayResp) FastRead(buf []byte, _type int8, number int32) (offset int,
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -78,6 +73,81 @@ ReadFieldError:
 }
 
 func (x *PrepayResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.PayUrl, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *PrepayResp) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.OutTradeNo, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *RepayReq) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 3:
+		offset, err = x.fastReadField3(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_RepayReq[number], err)
+}
+
+func (x *RepayReq) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.Amount, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *RepayReq) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.OutTradeNo, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *RepayReq) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.Subject, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *RepayResp) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_RepayResp[number], err)
+}
+
+func (x *RepayResp) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	x.PayUrl, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
@@ -230,7 +300,6 @@ func (x *PrepayReq) FastWrite(buf []byte) (offset int) {
 		return offset
 	}
 	offset += x.fastWriteField1(buf[offset:])
-	offset += x.fastWriteField2(buf[offset:])
 	offset += x.fastWriteField3(buf[offset:])
 	return offset
 }
@@ -240,14 +309,6 @@ func (x *PrepayReq) fastWriteField1(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteString(buf[offset:], 1, x.GetAmount())
-	return offset
-}
-
-func (x *PrepayReq) fastWriteField2(buf []byte) (offset int) {
-	if x.OutTradeNo == "" {
-		return offset
-	}
-	offset += fastpb.WriteString(buf[offset:], 2, x.GetOutTradeNo())
 	return offset
 }
 
@@ -264,10 +325,69 @@ func (x *PrepayResp) FastWrite(buf []byte) (offset int) {
 		return offset
 	}
 	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
 	return offset
 }
 
 func (x *PrepayResp) fastWriteField1(buf []byte) (offset int) {
+	if x.PayUrl == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetPayUrl())
+	return offset
+}
+
+func (x *PrepayResp) fastWriteField2(buf []byte) (offset int) {
+	if x.OutTradeNo == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetOutTradeNo())
+	return offset
+}
+
+func (x *RepayReq) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField3(buf[offset:])
+	return offset
+}
+
+func (x *RepayReq) fastWriteField1(buf []byte) (offset int) {
+	if x.Amount == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetAmount())
+	return offset
+}
+
+func (x *RepayReq) fastWriteField2(buf []byte) (offset int) {
+	if x.OutTradeNo == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetOutTradeNo())
+	return offset
+}
+
+func (x *RepayReq) fastWriteField3(buf []byte) (offset int) {
+	if x.Subject == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 3, x.GetSubject())
+	return offset
+}
+
+func (x *RepayResp) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *RepayResp) fastWriteField1(buf []byte) (offset int) {
 	if x.PayUrl == "" {
 		return offset
 	}
@@ -380,7 +500,6 @@ func (x *PrepayReq) Size() (n int) {
 		return n
 	}
 	n += x.sizeField1()
-	n += x.sizeField2()
 	n += x.sizeField3()
 	return n
 }
@@ -390,14 +509,6 @@ func (x *PrepayReq) sizeField1() (n int) {
 		return n
 	}
 	n += fastpb.SizeString(1, x.GetAmount())
-	return n
-}
-
-func (x *PrepayReq) sizeField2() (n int) {
-	if x.OutTradeNo == "" {
-		return n
-	}
-	n += fastpb.SizeString(2, x.GetOutTradeNo())
 	return n
 }
 
@@ -414,10 +525,69 @@ func (x *PrepayResp) Size() (n int) {
 		return n
 	}
 	n += x.sizeField1()
+	n += x.sizeField2()
 	return n
 }
 
 func (x *PrepayResp) sizeField1() (n int) {
+	if x.PayUrl == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetPayUrl())
+	return n
+}
+
+func (x *PrepayResp) sizeField2() (n int) {
+	if x.OutTradeNo == "" {
+		return n
+	}
+	n += fastpb.SizeString(2, x.GetOutTradeNo())
+	return n
+}
+
+func (x *RepayReq) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	n += x.sizeField2()
+	n += x.sizeField3()
+	return n
+}
+
+func (x *RepayReq) sizeField1() (n int) {
+	if x.Amount == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetAmount())
+	return n
+}
+
+func (x *RepayReq) sizeField2() (n int) {
+	if x.OutTradeNo == "" {
+		return n
+	}
+	n += fastpb.SizeString(2, x.GetOutTradeNo())
+	return n
+}
+
+func (x *RepayReq) sizeField3() (n int) {
+	if x.Subject == "" {
+		return n
+	}
+	n += fastpb.SizeString(3, x.GetSubject())
+	return n
+}
+
+func (x *RepayResp) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *RepayResp) sizeField1() (n int) {
 	if x.PayUrl == "" {
 		return n
 	}
@@ -527,11 +697,21 @@ func (x *GetByOutTradeNoResp) sizeField5() (n int) {
 
 var fieldIDToName_PrepayReq = map[int32]string{
 	1: "Amount",
-	2: "OutTradeNo",
 	3: "Subject",
 }
 
 var fieldIDToName_PrepayResp = map[int32]string{
+	1: "PayUrl",
+	2: "OutTradeNo",
+}
+
+var fieldIDToName_RepayReq = map[int32]string{
+	1: "Amount",
+	2: "OutTradeNo",
+	3: "Subject",
+}
+
+var fieldIDToName_RepayResp = map[int32]string{
 	1: "PayUrl",
 }
 

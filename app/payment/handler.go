@@ -29,3 +29,10 @@ func (s *PaymentServiceImpl) GetByOutTradeNo(ctx context.Context, req *payment.G
 
 	return resp, err
 }
+
+// Repay implements the PaymentServiceImpl interface.
+func (s *PaymentServiceImpl) Repay(ctx context.Context, req *payment.RepayReq) (resp *payment.RepayResp, err error) {
+	resp, err = service.NewRepayService(ctx).Run(req)
+
+	return resp, err
+}

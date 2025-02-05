@@ -5,17 +5,14 @@ import (
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/payment/conf"
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/payment/model"
 	payment "github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/payment"
-	sf "github.com/bwmarrin/snowflake"
-	alipay "github.com/smartwalle/alipay/v3"
-	"time"
+	"github.com/smartwalle/alipay/v3"
 )
 
-type PrepayService struct {
+type RepayService struct {
 	ctx          context.Context
 	aliPayClient *alipay.Client
-	SfNode       *sf.Node
-} // NewPrepayService new PrepayService
-func NewPrepayService(ctx context.Context) *PrepayService {
+} // NewRepayService new RepayService
+func NewRepayService(ctx context.Context) *RepayService {
 	aliPayClient, err := alipay.New(conf.GetConf().AliPay.AppID, conf.GetConf().AliPay.PrivateKey, false)
 	if err != nil {
 		panic(err)
@@ -24,28 +21,12 @@ func NewPrepayService(ctx context.Context) *PrepayService {
 	if err != nil {
 		panic(err)
 	}
-
-	return &PrepayService{ctx: ctx, aliPayClient: aliPayClient, SfNode: newSfNode()}
-}
-
-func newSfNode() *sf.Node {
-	var st time.Time
-	st, err := time.Parse("2006-01-02", "2025-02-01")
-	if err != nil {
-		panic(err)
-	}
-	sf.Epoch = st.UnixNano() / 1000000
-	node, err := sf.NewNode(1)
-	if err != nil {
-		panic(err)
-	}
-	return node
+	return &RepayService{ctx: ctx, aliPayClient: aliPayClient}
 }
 
 // Run create note info
-func (s *PrepayService) Run(req *payment.PrepayReq) (resp *payment.PrepayResp, err error) {
-	outTradeNo := s.SfNode.Generate().String()
-	err = model.Create(s.ctx, req.Subject, outTradeNo, req.Amount)
+func (s *RepayService) Run(req *payment.RepayReq) (resp *payment.RepayResp, err error) {
+	err = model.CreateOnce(s.ctx, req.Subject, req.OutTradeNo, req.Amount)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +37,7 @@ func (s *PrepayService) Run(req *payment.PrepayReq) (resp *payment.PrepayResp, e
 	p.ReturnURL = conf.GetConf().AliPay.ReturnURL
 
 	p.Subject = req.Subject
-	p.OutTradeNo = outTradeNo
+	p.OutTradeNo = req.OutTradeNo
 	p.TotalAmount = req.Amount
 
 	payUrl, err := s.aliPayClient.TradeWapPay(p)
@@ -64,5 +45,6 @@ func (s *PrepayService) Run(req *payment.PrepayReq) (resp *payment.PrepayResp, e
 		return nil, err
 	}
 
-	return &payment.PrepayResp{PayUrl: payUrl.String(), OutTradeNo: outTradeNo}, nil
+	return &payment.RepayResp{PayUrl: payUrl.String()}, nil
+
 }
