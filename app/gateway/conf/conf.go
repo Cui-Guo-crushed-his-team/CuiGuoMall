@@ -18,13 +18,25 @@ var (
 )
 
 type Config struct {
-	Env string
-
-	Hertz Hertz `yaml:"hertz"`
-	MySQL MySQL `yaml:"mysql"`
-	Redis Redis `yaml:"redis"`
+	Env        string
+	Jaeger     Jaeger     `yaml:"jaeger"`
+	Hertz      Hertz      `yaml:"hertz"`
+	MySQL      MySQL      `yaml:"mysql"`
+	Redis      Redis      `yaml:"redis"`
+	Prometheus Prometheus `yaml:"prometheus"`
+	Consul     Consul     `yaml:"consul"`
 }
-
+type Prometheus struct {
+	Post string `yaml:"post"`
+	Path string `yaml:"path"`
+}
+type Consul struct {
+	Addr string `yaml:"addr"`
+}
+type Jaeger struct {
+	Url            string `yaml:"url"`
+	ExportEndpoint string `yaml:"exportEndpoint"`
+}
 type MySQL struct {
 	DSN string `yaml:"dsn"`
 }

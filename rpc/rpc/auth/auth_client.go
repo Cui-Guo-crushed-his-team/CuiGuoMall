@@ -12,8 +12,7 @@ import (
 type RPCClient interface {
 	KitexClient() authservice.Client
 	Service() string
-	DeliverTokenByRPC(ctx context.Context, Req *auth.DeliverTokenReq, callOptions ...callopt.Option) (r *auth.DeliveryResp, err error)
-	VerifyTokenByRPC(ctx context.Context, Req *auth.VerifyTokenReq, callOptions ...callopt.Option) (r *auth.VerifyResp, err error)
+	ValidateToken(ctx context.Context, Req *auth.ValidateTokenRequest, callOptions ...callopt.Option) (r *auth.ValidateTokenResponse, err error)
 }
 
 func NewRPCClient(dstService string, opts ...client.Option) (RPCClient, error) {
@@ -42,10 +41,6 @@ func (c *clientImpl) KitexClient() authservice.Client {
 	return c.kitexClient
 }
 
-func (c *clientImpl) DeliverTokenByRPC(ctx context.Context, Req *auth.DeliverTokenReq, callOptions ...callopt.Option) (r *auth.DeliveryResp, err error) {
-	return c.kitexClient.DeliverTokenByRPC(ctx, Req, callOptions...)
-}
-
-func (c *clientImpl) VerifyTokenByRPC(ctx context.Context, Req *auth.VerifyTokenReq, callOptions ...callopt.Option) (r *auth.VerifyResp, err error) {
-	return c.kitexClient.VerifyTokenByRPC(ctx, Req, callOptions...)
+func (c *clientImpl) ValidateToken(ctx context.Context, Req *auth.ValidateTokenRequest, callOptions ...callopt.Option) (r *auth.ValidateTokenResponse, err error) {
+	return c.kitexClient.ValidateToken(ctx, Req, callOptions...)
 }

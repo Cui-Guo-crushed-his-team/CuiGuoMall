@@ -24,18 +24,10 @@ var (
 	_ = time.Nanosecond
 )
 
-func (m *DeliverTokenReq) Validate() error {
+func (m *ValidateTokenRequest) Validate() error {
 	return nil
 }
 
-func (m *VerifyTokenReq) Validate() error {
-	return nil
-}
-
-func (m *DeliveryResp) Validate() error {
-	return nil
-}
-
-func (m *VerifyResp) Validate() error {
+func (m *ValidateTokenResponse) Validate() error {
 	return nil
 }

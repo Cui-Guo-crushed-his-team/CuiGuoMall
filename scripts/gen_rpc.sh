@@ -53,6 +53,9 @@ function gen_server() {
   for proto in "${proto_files[@]}"; do
     local workdir="app/${proto}"
     echo "generating server code for ${proto}.proto"
+    if [[ ! -d "$workdir" ]];then
+      mkdir "$workdir"
+    fi
     pushd "$workdir" >/dev/null || exit 1
     cwgo server \
       --type RPC \

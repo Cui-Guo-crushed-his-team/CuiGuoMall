@@ -4,8 +4,6 @@ package main
 
 import (
 	"context"
-	"time"
-
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/gateway/biz/router"
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/gateway/conf"
 	"github.com/cloudwego/hertz/pkg/app"
@@ -18,17 +16,31 @@ import (
 	"github.com/hertz-contrib/gzip"
 	"github.com/hertz-contrib/logger/accesslog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
+	"github.com/hertz-contrib/monitor-prometheus"
+	"github.com/hertz-contrib/obs-opentelemetry/provider"
+	hertztracing "github.com/hertz-contrib/obs-opentelemetry/tracing"
 	"github.com/hertz-contrib/pprof"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"time"
 )
 
 func main() {
 	// init dal
 	// dal.Init()
-	address := conf.GetConf().Hertz.Address
-	h := server.New(server.WithHostPorts(address))
-
+	p := provider.NewOpenTelemetryProvider(
+		provider.WithServiceName(conf.GetConf().Hertz.Service),
+		provider.WithExportEndpoint(conf.GetConf().Jaeger.ExportEndpoint),
+		provider.WithInsecure(),
+	)
+	defer p.Shutdown(context.Background())
+	tracer, cfg := hertztracing.NewServerTracer()
+	h := server.New(
+		server.WithHostPorts(conf.GetConf().Hertz.Address),
+		server.WithTracer(prometheus.NewServerTracer(conf.GetConf().Prometheus.Post, conf.GetConf().Prometheus.Path)),
+		tracer,
+	)
+	h.Use(hertztracing.ServerMiddleware(cfg))
 	registerMiddleware(h)
 
 	// add a ping route to test

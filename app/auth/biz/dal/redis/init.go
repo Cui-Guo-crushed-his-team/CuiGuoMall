@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/auth/conf"
-
 )
 
 var (
