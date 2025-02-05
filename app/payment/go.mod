@@ -9,6 +9,7 @@ replace (
 
 require (
 	github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc v0.0.0-00010101000000-000000000000
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/cloudwego/kitex v0.12.1
 	github.com/kitex-contrib/obs-opentelemetry/logging/logrus v0.0.0-20241120035129-55da83caab1b
 	github.com/kr/pretty v0.3.1

@@ -36,11 +36,21 @@ func Create(ctx context.Context, desc string, outTradeNO, amount string) error {
 		Amount:      amount,
 		Status:      PaymentStatusInit,
 	}
+	return mysql.DB.WithContext(ctx).Create(&p).Error
+}
+
+// CreateOnce 只会创建一次
+func CreateOnce(ctx context.Context, desc string, outTradeNO, amount string) error {
+	p := Payment{
+		Description: desc,
+		OutTradeNO:  outTradeNO,
+		Amount:      amount,
+		Status:      PaymentStatusInit,
+	}
 	return mysql.DB.Clauses(clause.OnConflict{
 		DoNothing: true,
 	}).WithContext(ctx).Create(&p).Error
 }
-
 func Finish(ctx context.Context, outTradeNO, tradeNO string) error {
 	result := mysql.DB.WithContext(ctx).
 		Where("out_trade_no = ?", outTradeNO).

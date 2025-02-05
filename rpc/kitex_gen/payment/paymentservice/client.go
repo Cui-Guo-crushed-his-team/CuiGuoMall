@@ -12,6 +12,7 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	Prepay(ctx context.Context, Req *payment.PrepayReq, callOptions ...callopt.Option) (r *payment.PrepayResp, err error)
+	Repay(ctx context.Context, Req *payment.RepayReq, callOptions ...callopt.Option) (r *payment.RepayResp, err error)
 	Finish(ctx context.Context, Req *payment.FinishReq, callOptions ...callopt.Option) (r *payment.FinishResp, err error)
 	GetByOutTradeNo(ctx context.Context, Req *payment.GetByOutTradeNoReq, callOptions ...callopt.Option) (r *payment.GetByOutTradeNoResp, err error)
 }
@@ -48,6 +49,11 @@ type kPaymentServiceClient struct {
 func (p *kPaymentServiceClient) Prepay(ctx context.Context, Req *payment.PrepayReq, callOptions ...callopt.Option) (r *payment.PrepayResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Prepay(ctx, Req)
+}
+
+func (p *kPaymentServiceClient) Repay(ctx context.Context, Req *payment.RepayReq, callOptions ...callopt.Option) (r *payment.RepayResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.Repay(ctx, Req)
 }
 
 func (p *kPaymentServiceClient) Finish(ctx context.Context, Req *payment.FinishReq, callOptions ...callopt.Option) (r *payment.FinishResp, err error) {

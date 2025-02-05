@@ -16,6 +16,15 @@ func Prepay(ctx context.Context, req *payment.PrepayReq, callOptions ...callopt.
 	return resp, nil
 }
 
+func Repay(ctx context.Context, req *payment.RepayReq, callOptions ...callopt.Option) (resp *payment.RepayResp, err error) {
+	resp, err = defaultClient.Repay(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "Repay call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}
+
 func Finish(ctx context.Context, req *payment.FinishReq, callOptions ...callopt.Option) (resp *payment.FinishResp, err error) {
 	resp, err = defaultClient.Finish(ctx, req, callOptions...)
 	if err != nil {

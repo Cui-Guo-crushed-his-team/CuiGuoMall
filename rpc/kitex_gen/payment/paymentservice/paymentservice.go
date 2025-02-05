@@ -22,6 +22,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"Repay": kitex.NewMethodInfo(
+		repayHandler,
+		newRepayArgs,
+		newRepayResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 	"Finish": kitex.NewMethodInfo(
 		finishHandler,
 		newFinishArgs,
@@ -252,6 +259,159 @@ func (p *PrepayResult) IsSetSuccess() bool {
 }
 
 func (p *PrepayResult) GetResult() interface{} {
+	return p.Success
+}
+
+func repayHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(payment.RepayReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(payment.PaymentService).Repay(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *RepayArgs:
+		success, err := handler.(payment.PaymentService).Repay(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*RepayResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newRepayArgs() interface{} {
+	return &RepayArgs{}
+}
+
+func newRepayResult() interface{} {
+	return &RepayResult{}
+}
+
+type RepayArgs struct {
+	Req *payment.RepayReq
+}
+
+func (p *RepayArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(payment.RepayReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *RepayArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *RepayArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *RepayArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *RepayArgs) Unmarshal(in []byte) error {
+	msg := new(payment.RepayReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var RepayArgs_Req_DEFAULT *payment.RepayReq
+
+func (p *RepayArgs) GetReq() *payment.RepayReq {
+	if !p.IsSetReq() {
+		return RepayArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *RepayArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *RepayArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type RepayResult struct {
+	Success *payment.RepayResp
+}
+
+var RepayResult_Success_DEFAULT *payment.RepayResp
+
+func (p *RepayResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(payment.RepayResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *RepayResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *RepayResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *RepayResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *RepayResult) Unmarshal(in []byte) error {
+	msg := new(payment.RepayResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *RepayResult) GetSuccess() *payment.RepayResp {
+	if !p.IsSetSuccess() {
+		return RepayResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *RepayResult) SetSuccess(x interface{}) {
+	p.Success = x.(*payment.RepayResp)
+}
+
+func (p *RepayResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *RepayResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -576,6 +736,16 @@ func (p *kClient) Prepay(ctx context.Context, Req *payment.PrepayReq) (r *paymen
 	_args.Req = Req
 	var _result PrepayResult
 	if err = p.c.Call(ctx, "Prepay", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) Repay(ctx context.Context, Req *payment.RepayReq) (r *payment.RepayResp, err error) {
+	var _args RepayArgs
+	_args.Req = Req
+	var _result RepayResult
+	if err = p.c.Call(ctx, "Repay", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
