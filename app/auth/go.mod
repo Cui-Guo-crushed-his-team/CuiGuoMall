@@ -3,11 +3,13 @@ module github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/auth
 go 1.22.4
 
 replace (
+	github.com/Cui-Guo-crushed-his-team/CuiGuoMall/common => ../../common
 	github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc => ../../rpc
 	github.com/apache/thrift => github.com/apache/thrift v0.13.0
 )
 
 require (
+	github.com/Cui-Guo-crushed-his-team/CuiGuoMall/common v0.0.0-20250205155051-11075b19405c
 	github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc v0.0.0-20250204081305-4fd922063ebe
 	github.com/cloudwego/kitex v0.12.1
 	github.com/kitex-contrib/obs-opentelemetry/logging/logrus v0.0.0-20241120035129-55da83caab1b
@@ -41,6 +43,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect

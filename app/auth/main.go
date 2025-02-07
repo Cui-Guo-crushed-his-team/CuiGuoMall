@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/auth/biz/dal"
 	"net"
 	"time"
 
@@ -15,9 +16,10 @@ import (
 )
 
 func main() {
+	dal.InitRepo()
 	opts := kitexInit()
 
-	svr := authservice.NewServer(new(AuthServiceImpl), opts...)
+	svr := authservice.NewServer(NewAuthServiceImpl(), opts...)
 
 	err := svr.Run()
 	if err != nil {
