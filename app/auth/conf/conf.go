@@ -23,6 +23,7 @@ type Config struct {
 	MySQL    MySQL    `yaml:"mysql"`
 	Redis    Redis    `yaml:"redis"`
 	Registry Registry `yaml:"registry"`
+	Secret   string   `yaml:"secret"`
 }
 
 type MySQL struct {
@@ -61,6 +62,7 @@ func GetConf() *Config {
 func initConf() {
 	prefix := "conf"
 	confFileRelPath := filepath.Join(prefix, filepath.Join(GetEnv(), "conf.yaml"))
+
 	content, err := ioutil.ReadFile(confFileRelPath)
 	if err != nil {
 		panic(err)
@@ -82,7 +84,7 @@ func initConf() {
 func GetEnv() string {
 	e := os.Getenv("GO_ENV")
 	if len(e) == 0 {
-		return "test"
+		return "dev"
 	}
 	return e
 }
