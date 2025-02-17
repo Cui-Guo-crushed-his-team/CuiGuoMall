@@ -1,8 +1,11 @@
 package mysql
 
 import (
+	"os"
+
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/order/conf"
 
+	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/order/biz/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -21,5 +24,11 @@ func Init() {
 	)
 	if err != nil {
 		panic(err)
+	}
+	if os.Getenv("GO_ENV") != "online" {
+		DB.AutoMigrate( //nolint:errcheck
+			&model.Order{},
+			&model.OrderItem{},
+		)
 	}
 }

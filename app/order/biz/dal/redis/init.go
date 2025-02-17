@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/Cui-Guo-crushed-his-team/CuiGuoMall/app/order/conf"
-	
+	"github.com/redis/go-redis/v9"
 )
 
 var (
