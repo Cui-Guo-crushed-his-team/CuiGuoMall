@@ -311,6 +311,11 @@ func (x *Order) FastRead(buf []byte, _type int8, number int32) (offset int, err 
 		if err != nil {
 			goto ReadFieldError
 		}
+	case 8:
+		offset, err = x.fastReadField8(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
 	default:
 		offset, err = fastpb.Skip(buf, _type, number)
 		if err != nil {
@@ -366,6 +371,11 @@ func (x *Order) fastReadField6(buf []byte, _type int8) (offset int, err error) {
 
 func (x *Order) fastReadField7(buf []byte, _type int8) (offset int, err error) {
 	x.CreatedAt, offset, err = fastpb.ReadInt32(buf, _type)
+	return offset, err
+}
+
+func (x *Order) fastReadField8(buf []byte, _type int8) (offset int, err error) {
+	x.Status, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
@@ -702,6 +712,7 @@ func (x *Order) FastWrite(buf []byte) (offset int) {
 	offset += x.fastWriteField5(buf[offset:])
 	offset += x.fastWriteField6(buf[offset:])
 	offset += x.fastWriteField7(buf[offset:])
+	offset += x.fastWriteField8(buf[offset:])
 	return offset
 }
 
@@ -760,6 +771,14 @@ func (x *Order) fastWriteField7(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteInt32(buf[offset:], 7, x.GetCreatedAt())
+	return offset
+}
+
+func (x *Order) fastWriteField8(buf []byte) (offset int) {
+	if x.Status == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 8, x.GetStatus())
 	return offset
 }
 
@@ -1044,6 +1063,7 @@ func (x *Order) Size() (n int) {
 	n += x.sizeField5()
 	n += x.sizeField6()
 	n += x.sizeField7()
+	n += x.sizeField8()
 	return n
 }
 
@@ -1102,6 +1122,14 @@ func (x *Order) sizeField7() (n int) {
 		return n
 	}
 	n += fastpb.SizeInt32(7, x.GetCreatedAt())
+	return n
+}
+
+func (x *Order) sizeField8() (n int) {
+	if x.Status == "" {
+		return n
+	}
+	n += fastpb.SizeString(8, x.GetStatus())
 	return n
 }
 
@@ -1237,6 +1265,7 @@ var fieldIDToName_Order = map[int32]string{
 	5: "Address",
 	6: "Email",
 	7: "CreatedAt",
+	8: "Status",
 }
 
 var fieldIDToName_ListOrderResp = map[int32]string{

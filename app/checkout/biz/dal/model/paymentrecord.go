@@ -28,6 +28,7 @@ func (p *PaymentRecord) TableName() string {
 	return "payment_record"
 }
 
+// todo userid没了
 // GetPaymentRecordByOrderID 根据订单号查询支付记录
 func GetPaymentRecordByOrderID(db *gorm.DB, ctx context.Context, orderID string) (*PaymentRecord, error) {
 	var record PaymentRecord
@@ -38,8 +39,9 @@ func GetPaymentRecordByOrderID(db *gorm.DB, ctx context.Context, orderID string)
 	return &record, nil
 }
 
+// todo userid没了
 // GetPaymentRecordByPaymentOutTradeNo 根据支付单号查询支付记录
-func GetPaymentRecordByPaymentOutTradeNo(db *gorm.DB, ctx context.Context, paymentOutTradeNo string) (*PaymentRecord, error) {
+func GetPaymentRecordByPaymentOutTradeNo(ctx context.Context, db *gorm.DB, paymentOutTradeNo string) (*PaymentRecord, error) {
 	var record PaymentRecord
 	err := db.WithContext(ctx).Where("payment_out_trade_no = ?", paymentOutTradeNo).First(&record).Error
 	if err != nil {

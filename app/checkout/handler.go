@@ -15,3 +15,10 @@ func (s *CheckoutServiceImpl) Checkout(ctx context.Context, req *checkout.Checko
 
 	return resp, err
 }
+
+// GetCheckoutRecordByOrderId implements the CheckoutServiceImpl interface.
+func (s *CheckoutServiceImpl) GetCheckoutRecordByOrderId(ctx context.Context, req *checkout.GetCheckoutRecordByOrderIdReq) (resp *checkout.GetCheckoutRecordByOrderIdResp, err error) {
+	resp, err = service.NewGetCheckoutRecordByOrderIdService(ctx).Run(req)
+
+	return resp, err
+}

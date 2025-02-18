@@ -32,7 +32,7 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	// 有这个TradeNo说明不是第一次支付，要进行repay
 	if req.PaymentOutTradeNo != "" {
 		// 获取支付记录
-		paymentRecord, err := model.GetPaymentRecordByPaymentOutTradeNo(mysql.DB, s.ctx, req.PaymentOutTradeNo)
+		paymentRecord, err := model.GetPaymentRecordByPaymentOutTradeNo(s.ctx, mysql.DB, req.PaymentOutTradeNo)
 		if err != nil {
 			klog.Error(err)
 			err = fmt.Errorf("GetPaymentRecordByOrderID.err:%v", err)

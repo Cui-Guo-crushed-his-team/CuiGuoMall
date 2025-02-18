@@ -22,6 +22,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
+	"GetCheckoutRecordByOrderId": kitex.NewMethodInfo(
+		getCheckoutRecordByOrderIdHandler,
+		newGetCheckoutRecordByOrderIdArgs,
+		newGetCheckoutRecordByOrderIdResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingUnary),
+	),
 }
 
 var (
@@ -241,6 +248,159 @@ func (p *CheckoutResult) GetResult() interface{} {
 	return p.Success
 }
 
+func getCheckoutRecordByOrderIdHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(checkout.GetCheckoutRecordByOrderIdReq)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(checkout.CheckoutService).GetCheckoutRecordByOrderId(ctx, req)
+		if err != nil {
+			return err
+		}
+		return st.SendMsg(resp)
+	case *GetCheckoutRecordByOrderIdArgs:
+		success, err := handler.(checkout.CheckoutService).GetCheckoutRecordByOrderId(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*GetCheckoutRecordByOrderIdResult)
+		realResult.Success = success
+		return nil
+	default:
+		return errInvalidMessageType
+	}
+}
+func newGetCheckoutRecordByOrderIdArgs() interface{} {
+	return &GetCheckoutRecordByOrderIdArgs{}
+}
+
+func newGetCheckoutRecordByOrderIdResult() interface{} {
+	return &GetCheckoutRecordByOrderIdResult{}
+}
+
+type GetCheckoutRecordByOrderIdArgs struct {
+	Req *checkout.GetCheckoutRecordByOrderIdReq
+}
+
+func (p *GetCheckoutRecordByOrderIdArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(checkout.GetCheckoutRecordByOrderIdReq)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *GetCheckoutRecordByOrderIdArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *GetCheckoutRecordByOrderIdArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *GetCheckoutRecordByOrderIdArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, nil
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *GetCheckoutRecordByOrderIdArgs) Unmarshal(in []byte) error {
+	msg := new(checkout.GetCheckoutRecordByOrderIdReq)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var GetCheckoutRecordByOrderIdArgs_Req_DEFAULT *checkout.GetCheckoutRecordByOrderIdReq
+
+func (p *GetCheckoutRecordByOrderIdArgs) GetReq() *checkout.GetCheckoutRecordByOrderIdReq {
+	if !p.IsSetReq() {
+		return GetCheckoutRecordByOrderIdArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *GetCheckoutRecordByOrderIdArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *GetCheckoutRecordByOrderIdArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type GetCheckoutRecordByOrderIdResult struct {
+	Success *checkout.GetCheckoutRecordByOrderIdResp
+}
+
+var GetCheckoutRecordByOrderIdResult_Success_DEFAULT *checkout.GetCheckoutRecordByOrderIdResp
+
+func (p *GetCheckoutRecordByOrderIdResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(checkout.GetCheckoutRecordByOrderIdResp)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, nil
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) Unmarshal(in []byte) error {
+	msg := new(checkout.GetCheckoutRecordByOrderIdResp)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) GetSuccess() *checkout.GetCheckoutRecordByOrderIdResp {
+	if !p.IsSetSuccess() {
+		return GetCheckoutRecordByOrderIdResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) SetSuccess(x interface{}) {
+	p.Success = x.(*checkout.GetCheckoutRecordByOrderIdResp)
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *GetCheckoutRecordByOrderIdResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -256,6 +416,16 @@ func (p *kClient) Checkout(ctx context.Context, Req *checkout.CheckoutReq) (r *c
 	_args.Req = Req
 	var _result CheckoutResult
 	if err = p.c.Call(ctx, "Checkout", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetCheckoutRecordByOrderId(ctx context.Context, Req *checkout.GetCheckoutRecordByOrderIdReq) (r *checkout.GetCheckoutRecordByOrderIdResp, err error) {
+	var _args GetCheckoutRecordByOrderIdArgs
+	_args.Req = Req
+	var _result GetCheckoutRecordByOrderIdResult
+	if err = p.c.Call(ctx, "GetCheckoutRecordByOrderId", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
