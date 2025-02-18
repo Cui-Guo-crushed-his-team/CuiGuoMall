@@ -29,57 +29,58 @@ func NewCheckoutService(ctx context.Context) *CheckoutService {
 
 // Run create note info
 func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.CheckoutResp, err error) {
-	// Finish your business logic.
-	if req.TradeNo != "" {
+	// 有这个TradeNo说明不是第一次支付，要进行repay
+	if req.PaymentOutTradeNo != "" {
 		// 获取支付记录
-		paymentRecord, err := model.GetPaymentRecordByOutTradeNo(mysql.DB, s.ctx, req.TradeNo)
+		paymentRecord, err := model.GetPaymentRecordByPaymentOutTradeNo(mysql.DB, s.ctx, req.PaymentOutTradeNo)
 		if err != nil {
 			klog.Error(err)
 			err = fmt.Errorf("GetPaymentRecordByOrderID.err:%v", err)
 			return nil, err
 		}
-		// 理论上不会出现这种情况
-		if paymentRecord == nil {
-			return nil, errors.New("payment record not found")
+		paymentResp, err := rpc.PaymentClient.GetByOutTradeNo(s.ctx, &payment.GetByOutTradeNoReq{OutTradeNo: req.PaymentOutTradeNo})
+		if err != nil {
+			return nil, fmt.Errorf("GetPaymentRecordByOrderID.err:%v", err)
 		}
-		if paymentRecord.PaymentStatus == model.PaymentStatusPaid {
+		switch paymentResp.Status {
+		case payment.Status_Unknown:
+			//一般不会 出现
+			return nil, errors.New("payment status unKnow")
+		case payment.Status_Success:
 			return nil, errors.New("payment already paid")
-		}
-		if paymentRecord.PaymentStatus == model.PaymentStatusFailed {
+		case payment.Status_Failed:
 			return nil, errors.New("payment failed")
+		case payment.Status_Refund:
+			return nil, errors.New("payment refund")
+		default:
+			//未支付
 		}
-		if paymentRecord.PaymentStatus == model.PaymentStatusPaying {
-			return nil, errors.New("payment is paying")
+
+		repayResp, err := rpc.PaymentClient.Repay(s.ctx, &payment.RepayReq{
+			Amount:     strconv.FormatFloat(paymentRecord.Amount, 'f', 2, 64),
+			OutTradeNo: req.PaymentOutTradeNo,
+			Subject:    fmt.Sprintf("Order %s", paymentRecord.OrderID),
+		})
+		if err != nil {
+			klog.Error(err)
+			return nil, err
 		}
-		if paymentRecord.PaymentStatus == model.PaymentStatusUnpaid || paymentRecord.PaymentStatus == model.PaymentStatusPaying {
-			payReq := &payment.RepayReq{
-				Amount:     strconv.FormatFloat(paymentRecord.Amount, 'f', 2, 64),
-				OutTradeNo: paymentRecord.OutTradeNo,
-				Subject:    paymentRecord.Subject,
-			}
-			paymentResult, err := rpc.PaymentClient.Repay(s.ctx, payReq)
-			if err != nil {
-				klog.Error(err)
-				return nil, fmt.Errorf("Repay.err:%v", err)
-			}
-			err = model.UpdatePaymentStatus(mysql.DB, s.ctx, paymentRecord.OrderID, model.PaymentStatusPaying)
-			if err != nil {
-				klog.Error(err)
-				return nil, fmt.Errorf("UpdatePaymentStatus.err:%v", err)
-			}
-			// todo 让支付服务去进行调用
-			// _, err = rpc.OrderClient.MarkOrderPaid(s.ctx, &order.MarkOrderPaidReq{UserId: req.UserId, OrderId: paymentRecord.OrderID})
-			// if err != nil {
-			// 	klog.Error(err)
-			// 	return nil, err
-			// }
-			return &checkout.CheckoutResp{
-				OrderId:       paymentRecord.OrderID,
-				TransactionId: paymentRecord.OutTradeNo,
-				PayUrl:        paymentResult.PayUrl,
-			}, nil
-		}
+		// 不用更新状态，都是正在支付
+
+		// todo 让支付服务去进行调用
+		// _, err = rpc.OrderClient.MarkOrderPaid(s.ctx, &order.MarkOrderPaidReq{UserId: req.UserId, OrderId: paymentRecord.OrderID})
+		// if err != nil {
+		// 	klog.Error(err)
+		// 	return nil, err
+		// }
+		return &checkout.CheckoutResp{
+			OrderId:       paymentRecord.OrderID,
+			TransactionId: paymentRecord.PaymentOutTradeNo,
+			PayUrl:        repayResp.PayUrl,
+		}, nil
+
 	}
+	//  req.PaymentOutTradeNo == "" 就执行购物车结算
 	// 获取购物车信息
 	cartResult, err := rpc.CartClient.GetCart(s.ctx, &cart.GetCartReq{UserId: req.UserId})
 	if err != nil {
@@ -139,9 +140,13 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 		return nil, err
 	}
 	klog.Info("orderResult", orderResult)
+	if orderResult == nil || orderResult.Order == nil {
+		klog.Error(errors.New("order creation failed"))
+		return nil, errors.New("order creation failed")
+	}
 
 	// 发送延迟取消订单消息
-	err = s.sendDelayedCancelMessage(orderResult.Order.OrderId)
+	err = s.sendDelayedCancelMessage(req.UserId, orderResult.Order.OrderId)
 	if err != nil {
 		klog.Error(err)
 		return nil, fmt.Errorf("sendDelayedCancelMessage.err:%v", err)
@@ -154,12 +159,6 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 		return nil, err
 	}
 	klog.Info(emptyResult)
-	// 支付
-	var orderId string
-	if orderResult != nil || orderResult.Order != nil {
-		orderId = orderResult.Order.OrderId
-	}
-
 	payReq := &payment.PrepayReq{
 		Amount:  strconv.FormatFloat(float64(total), 'f', 2, 64),
 		Subject: fmt.Sprintf("Order %s", orderResult.Order.OrderId),
@@ -170,6 +169,16 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 		err = fmt.Errorf("Charge.err:%v", err)
 		return nil, err
 	}
+
+	err = model.CreatePaymentRecord(mysql.DB, s.ctx, &model.PaymentRecord{
+		OrderID:           orderResult.Order.OrderId,
+		Status:            model.PaymentStatusUnpaid,
+		Amount:            float64(total),
+		PaymentOutTradeNo: paymentResult.OutTradeNo,
+	})
+	// 支付
+	var orderId = orderResult.Order.OrderId
+
 	// data, _ := proto.Marshal(&email.EmailReq{
 	// 	From:        "from@example.com",
 	// 	To:          req.Email,
@@ -194,7 +203,6 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	// 	klog.Error(err)
 	// 	return nil, err
 	// }
-
 	err = model.UpdatePaymentStatus(mysql.DB, s.ctx, orderId, model.PaymentStatusPaying)
 	if err != nil {
 		klog.Error(err)

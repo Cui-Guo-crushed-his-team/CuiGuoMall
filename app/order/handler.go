@@ -29,3 +29,10 @@ func (s *OrderServiceImpl) MarkOrderPaid(ctx context.Context, req *order.MarkOrd
 
 	return resp, err
 }
+
+// GetOrderById implements the OrderServiceImpl interface.
+func (s *OrderServiceImpl) GetOrderById(ctx context.Context, req *order.GetOrderByIdReq) (resp *order.GetOrderByIdResp, err error) {
+	resp, err = service.NewGetOrderByIdService(ctx).Run(req)
+
+	return resp, err
+}

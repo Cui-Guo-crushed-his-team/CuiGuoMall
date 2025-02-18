@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package  checkout;
-
+import "api.proto";
 option go_package = "github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/checkout";
 
 service CheckoutService {
@@ -17,12 +17,12 @@ message Address {
 }
 
 message CheckoutReq {
-  uint32 user_id = 1;
+  uint32 user_id = 1[(api.vt).gt = "0"];
   string firstname = 2;
   string lastname = 3;
   string email = 4;
   Address address = 5;
-  string trade_no = 6;
+  string payment_out_trade_no = 6;
 }
 
 message CheckoutResp {

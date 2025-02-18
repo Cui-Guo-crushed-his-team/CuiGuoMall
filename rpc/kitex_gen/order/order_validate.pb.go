@@ -63,3 +63,17 @@ func (m *MarkOrderPaidReq) Validate() error {
 func (m *MarkOrderPaidResp) Validate() error {
 	return nil
 }
+
+func (m *GetOrderByIdReq) Validate() error {
+	if len(m.GetOrderId()) < int(1) {
+		return fmt.Errorf("field order_id min_len rule failed, current value: %d", len(m.GetOrderId()))
+	}
+	if m.GetUserId() <= uint32(0) {
+		return fmt.Errorf("field user_id gt rule failed, current value: %v", m.GetUserId())
+	}
+	return nil
+}
+
+func (m *GetOrderByIdResp) Validate() error {
+	return nil
+}

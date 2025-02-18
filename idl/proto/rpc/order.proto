@@ -3,13 +3,14 @@ syntax = "proto3";
 package order;
 
 import "cart.proto";
-
+import "api.proto";
 option go_package = "github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/order";
 
 service OrderService {
   rpc PlaceOrder(PlaceOrderReq) returns (PlaceOrderResp) {}
   rpc ListOrder(ListOrderReq) returns (ListOrderResp) {}
   rpc MarkOrderPaid(MarkOrderPaidReq) returns (MarkOrderPaidResp) {}
+  rpc GetOrderById(GetOrderByIdReq) returns (GetOrderByIdResp) {}
 }
 
 message Address {
@@ -66,3 +67,12 @@ message MarkOrderPaidReq {
 }
 
 message MarkOrderPaidResp {}
+
+message GetOrderByIdReq {
+  string order_id = 1[(api.vt).min_size = "1"];
+  uint32 user_id = 2[(api.vt).gt = "0"];
+}
+
+message GetOrderByIdResp {
+  Order order = 1;
+}

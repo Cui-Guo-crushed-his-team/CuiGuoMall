@@ -44,7 +44,7 @@ func ListOrder(db *gorm.DB, ctx context.Context, userId uint32) (orders []Order,
 }
 
 func GetOrder(db *gorm.DB, ctx context.Context, userId uint32, orderId string) (order Order, err error) {
-	err = db.Where(&Order{UserId: userId, OrderId: orderId}).First(&order).Error
+	err = db.Where(&Order{UserId: userId, OrderId: orderId}).Preload("OrderItems").First(&order).Error
 	return
 }
 

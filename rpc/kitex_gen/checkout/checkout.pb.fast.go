@@ -4,6 +4,7 @@ package checkout
 
 import (
 	fmt "fmt"
+	api "github.com/Cui-Guo-crushed-his-team/CuiGuoMall/rpc/kitex_gen/api"
 	fastpb "github.com/cloudwego/fastpb"
 )
 
@@ -153,7 +154,7 @@ func (x *CheckoutReq) fastReadField5(buf []byte, _type int8) (offset int, err er
 }
 
 func (x *CheckoutReq) fastReadField6(buf []byte, _type int8) (offset int, err error) {
-	x.TradeNo, offset, err = fastpb.ReadString(buf, _type)
+	x.PaymentOutTradeNo, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
@@ -308,10 +309,10 @@ func (x *CheckoutReq) fastWriteField5(buf []byte) (offset int) {
 }
 
 func (x *CheckoutReq) fastWriteField6(buf []byte) (offset int) {
-	if x.TradeNo == "" {
+	if x.PaymentOutTradeNo == "" {
 		return offset
 	}
-	offset += fastpb.WriteString(buf[offset:], 6, x.GetTradeNo())
+	offset += fastpb.WriteString(buf[offset:], 6, x.GetPaymentOutTradeNo())
 	return offset
 }
 
@@ -455,10 +456,10 @@ func (x *CheckoutReq) sizeField5() (n int) {
 }
 
 func (x *CheckoutReq) sizeField6() (n int) {
-	if x.TradeNo == "" {
+	if x.PaymentOutTradeNo == "" {
 		return n
 	}
-	n += fastpb.SizeString(6, x.GetTradeNo())
+	n += fastpb.SizeString(6, x.GetPaymentOutTradeNo())
 	return n
 }
 
@@ -510,7 +511,7 @@ var fieldIDToName_CheckoutReq = map[int32]string{
 	3: "Lastname",
 	4: "Email",
 	5: "Address",
-	6: "TradeNo",
+	6: "PaymentOutTradeNo",
 }
 
 var fieldIDToName_CheckoutResp = map[int32]string{
@@ -518,3 +519,5 @@ var fieldIDToName_CheckoutResp = map[int32]string{
 	2: "TransactionId",
 	3: "PayUrl",
 }
+
+var _ = api.File_api_proto

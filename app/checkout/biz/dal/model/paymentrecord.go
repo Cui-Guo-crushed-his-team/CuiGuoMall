@@ -15,12 +15,13 @@ const (
 )
 
 type PaymentRecord struct {
-	ID        int64     `gorm:"primaryKey"`
-	OrderID   string    `gorm:"column:order_id;uniqueIndex"`
-	Status    int8      `gorm:"column:status"`
-	Amount    float64   `gorm:"column:amount"`
-	CreatedAt time.Time `gorm:"column:created_at"`
-	UpdatedAt time.Time `gorm:"column:updated_at"`
+	ID                int64     `gorm:"primaryKey"`
+	OrderID           string    `gorm:"column:order_id;uniqueIndex"`
+	Status            int8      `gorm:"column:status"`
+	Amount            float64   `gorm:"column:amount"`
+	PaymentOutTradeNo string    `gorm:"uniqueIndex"`
+	CreatedAt         time.Time `gorm:"column:created_at"`
+	UpdatedAt         time.Time `gorm:"column:updated_at"`
 }
 
 func (p *PaymentRecord) TableName() string {
@@ -31,6 +32,16 @@ func (p *PaymentRecord) TableName() string {
 func GetPaymentRecordByOrderID(db *gorm.DB, ctx context.Context, orderID string) (*PaymentRecord, error) {
 	var record PaymentRecord
 	err := db.WithContext(ctx).Where("order_id = ?", orderID).First(&record).Error
+	if err != nil {
+		return nil, err
+	}
+	return &record, nil
+}
+
+// GetPaymentRecordByPaymentOutTradeNo 根据支付单号查询支付记录
+func GetPaymentRecordByPaymentOutTradeNo(db *gorm.DB, ctx context.Context, paymentOutTradeNo string) (*PaymentRecord, error) {
+	var record PaymentRecord
+	err := db.WithContext(ctx).Where("payment_out_trade_no = ?", paymentOutTradeNo).First(&record).Error
 	if err != nil {
 		return nil, err
 	}

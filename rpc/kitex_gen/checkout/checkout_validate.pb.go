@@ -29,6 +29,9 @@ func (m *Address) Validate() error {
 }
 
 func (m *CheckoutReq) Validate() error {
+	if m.GetUserId() <= uint32(0) {
+		return fmt.Errorf("field user_id gt rule failed, current value: %v", m.GetUserId())
+	}
 	return nil
 }
 
