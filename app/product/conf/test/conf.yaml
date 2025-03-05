@@ -1,23 +1,26 @@
-kitex:
-  service: "product"
-  address: ":8888"
-  log_level: info
-  log_file_name: "log/kitex.log"
-  log_max_size: 10
-  log_max_age: 3
-  log_max_backups: 50
+service: "product"
+address: ":8888"
+log_level: info
+log_file_name: "log/kitex.log"
+log_max_size: 10
+log_max_age: 3
+log_max_backups: 50
 
 registry:
   registry_address:
-    - 127.0.0.1:2379
+    - "localhost:8500"  # 如果你启动了本地注册中心，例如 Consul
   username: ""
   password: ""
 
 mysql:
-  dsn: "gorm:gorm@tcp(127.0.0.1:3306)/gorm?charset=utf8mb4&parseTime=True&loc=Local"
+  dsn: "gorm:root:p%40ssw%21rd%23@tcp(localhost:3306)/gorm?charset=utf8mb4&parseTime=True&loc=Local"
 
 redis:
-  address: "127.0.0.1:6379"
+  address: "localhost:6379"  # Redis 地址改为本地
   username: ""
   password: ""
-  db: 0
+  db: 0  # 选择 DB0（开发环境）
+
+rocketmq:
+  endpoint: "localhost:8081"  # 如果你启动了本地 RocketMQ
+  web: "localhost:8080"
